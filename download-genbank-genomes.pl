@@ -89,7 +89,7 @@ my @wgethelp = `wget --help`;
 if(grep(/--show-progress/, @wgethelp)) { $wgetProgress=' --show-progress '; }
 
 print STDERR "Downloading file taxdump.tar.gz\n";
-system('wget -N -nv '.$wgetProgress.' ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz');
+system('wget -N -nv '.$wgetProgress.' http://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz');
 
 if(! -r "taxdump.tar.gz") { print STDERR "Missing file taxdump.tar.gz"; exit 1; }
 
