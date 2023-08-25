@@ -25,7 +25,7 @@ use Getopt::Std;
 use Term::ANSIColor;
 
 my %options=();
-getopts("t:ar", \%options);
+getopts("t:arg", \%options);
 
 my %nodes;
 my $arg_taxid = 1;
@@ -44,11 +44,17 @@ else {
 
 my $refseq_category_any = 1;
 if(exists($options{r})) {
-	print STDERR "RefSeq category: representative genome\n";
+	print STDERR "RefSeq category: representative genome or reference genome\n";
 	$refseq_category_any = 0;
 }
 else {
 	print STDERR "RefSeq category: any\n";
+}
+
+my $no_refseq_available = 1;
+if(exists($options{g})) {
+	print STDERR "skip if assembly is also in RefSeq category\n";
+	$no_refseq_available = 0;
 }
 
 if(exists($options{t})) {
@@ -124,7 +130,8 @@ while(<ASSS>) {
 	if($#F < 19) { print STDERR "Warning: Line $. has less than 20 fields, skipping...\n"; next; }
 	next unless $F[13] eq "Full";
 	next unless $assembly_level_any || $F[11] eq "Complete Genome" || $F[11] eq "Chromosome";
-	next unless $refseq_category_any || $F[4] eq "representative genome";
+	next unless $refseq_category_any || $F[4] eq "representative genome" || $F[4] eq "reference genome";
+	next unless $no_refseq_available || $F[17] ne "na";
 	my $taxid = $F[5];
 	if(!defined($nodes{$taxid})) { print STDERR "Warning: Taxon ID $taxid not found in taxonomy.\n"; next; }
 	if(is_ancestor($taxid,$arg_taxid)) {

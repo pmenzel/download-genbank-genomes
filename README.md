@@ -23,7 +23,9 @@ Setting option -a will download all genomes regardless of assembly level:
 ./download-genbank-genomes.pl -a -t fna 5052
 ```
 
-Additionally, genomes can be filtered by the RefSeq category "representative genome" using option -r.
+Additionally, genomes can be filtered by the RefSeq category "representative genome" or "reference genome" using option `-r`.
+
+When setting option `-g`, only assemblies with no matching assembly in RefSeq will be downloaded.
 
 Files are downloaded with `wget`.
 
