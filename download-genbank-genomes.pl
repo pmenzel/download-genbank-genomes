@@ -22,10 +22,9 @@
 use warnings;
 use strict;
 use Getopt::Std;
-use Term::ANSIColor;
 
 my %options=();
-getopts("t:arg", \%options);
+getopts("t:arge", \%options);
 
 my %nodes;
 my $arg_taxid = 1;
@@ -51,10 +50,22 @@ else {
 	print STDERR "RefSeq category: any\n";
 }
 
+my $excluded_from_refseq_any = 1;
+if(exists($options{e})) {
+	print STDERR "Do not download assemblies that are excluded from Refseq\n";
+	$excluded_from_refseq_any = 0;
+}
+else {
+	print STDERR "Download assemblies that are excluded from RefSeq\n";
+}
+
 my $no_refseq_available = 1;
 if(exists($options{g})) {
-	print STDERR "skip if assembly is also in RefSeq category\n";
+	print STDERR "Do not download assemblies that are also in RefSeq\n";
 	$no_refseq_available = 0;
+}
+else {
+	print STDERR "Download assemblies that are also in RefSeq\n";
 }
 
 if(exists($options{t})) {
@@ -132,6 +143,7 @@ while(<ASSS>) {
 	next unless $assembly_level_any || $F[11] eq "Complete Genome" || $F[11] eq "Chromosome";
 	next unless $refseq_category_any || $F[4] eq "representative genome" || $F[4] eq "reference genome";
 	next unless $no_refseq_available || $F[17] ne "na";
+	next unless $excluded_from_refseq_any || $F[20] eq "na";
 	my $taxid = $F[5];
 	if(!defined($nodes{$taxid})) { print STDERR "Warning: Taxon ID $taxid not found in taxonomy.\n"; next; }
 	if(is_ancestor($taxid,$arg_taxid)) {
@@ -143,7 +155,7 @@ while(<ASSS>) {
 }
 close(ASSS);
 
-print colored("\nDownloading ".scalar(@download_list). " genomes for taxon ID $arg_taxid\n\n","green");
+print STDERR "\nDownloading ".scalar(@download_list). " genomes for taxon ID $arg_taxid\n\n";
 foreach my $l (@download_list) {
 	my @F = split(/\//,$l);
 	print STDERR "Downloading ", $F[-1],"\n";
