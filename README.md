@@ -27,6 +27,8 @@ Additionally, genomes can be filtered by the RefSeq category "representative gen
 
 When setting option `-g`, only assemblies with no matching assembly in RefSeq will be downloaded.
 
+When setting option `-e`, assemblies that were excluded from RefSeq are not downloaded.
+
 Files are downloaded with `wget`.
 
 Copyright 2021 Peter Menzel <pmenzel@gmail.com>
